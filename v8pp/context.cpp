@@ -36,13 +36,13 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 		std::string const name = from_v8<std::string>(isolate, args[0], "");
 		if (name.empty())
 		{
-			throw std::runtime_error("load_module: require module name string argument");
+			throw std::runtime_error("load_module: require jsmodule name string argument");
 		}
 
 		context* ctx = detail::external_data::get<context*>(args.Data());
 		context::dynamic_modules::iterator it = ctx->modules_.find(name);
 
-		// check if module is already loaded
+		// check if jsmodule is already loaded
 		if (it != ctx->modules_.end())
 		{
 			result = v8::Local<v8::Value>::New(isolate, it->second.exports);
@@ -61,25 +61,25 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 				filename += suffix;
 			}
 
-			dynamic_module module;
+			dynamic_module jsmodule;
 #if defined(WIN32)
 			UINT const prev_error_mode = SetErrorMode(SEM_NOOPENFILEERRORBOX);
-			module.handle = LoadLibraryA(filename.c_str());
+			jsmodule.handle = LoadLibraryA(filename.c_str());
 			::SetErrorMode(prev_error_mode);
 #else
-			module.handle = dlopen(filename.c_str(), RTLD_LAZY);
+			jsmodule.handle = dlopen(filename.c_str(), RTLD_LAZY);
 #endif
 
-			if (!module.handle)
+			if (!jsmodule.handle)
 			{
 				throw std::runtime_error("load_module(" + name
 					+ "): could not load shared library " + filename);
 			}
 #if defined(WIN32)
-			void* sym = reinterpret_cast<void*>(::GetProcAddress((HMODULE)module.handle,
+			void* sym = reinterpret_cast<void*>(::GetProcAddress((HMODULE)jsmodule.handle,
 				V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME)));
 #else
-			void* sym = dlsym(module.handle, V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME));
+			void* sym = dlsym(jsmodule.handle, V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME));
 #endif
 			if (!sym)
 			{
@@ -92,8 +92,8 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 			using module_init_proc = v8::Local<v8::Value> (*)(v8::Isolate*);
 			module_init_proc init_proc = reinterpret_cast<module_init_proc>(sym);
 			result = init_proc(isolate);
-			module.exports.Reset(isolate, result);
-			ctx->modules_.emplace(name, std::move(module));
+			jsmodule.exports.Reset(isolate, result);
+			ctx->modules_.emplace(name, std::move(jsmodule));
 		}
 	}
 	catch (std::exception const& ex)
@@ -233,14 +233,14 @@ void context::destroy()
 
 	for (auto& kv : modules_)
 	{
-		dynamic_module& module = kv.second;
-		module.exports.Reset();
-		if (module.handle)
+		dynamic_module& jsmodule = kv.second;
+		jsmodule.exports.Reset();
+		if (jsmodule.handle)
 		{
 #if defined(WIN32)
-			::FreeLibrary((HMODULE)module.handle);
+			::FreeLibrary((HMODULE)jsmodule.handle);
 #else
-			dlclose(module.handle);
+			dlclose(jsmodule.handle);
 #endif
 		}
 	}
@@ -267,7 +267,7 @@ context& context::set(string_view name, v8::Local<v8::Value> value)
 	return *this;
 }
 
-context& context::set(string_view name, v8pp::module& m)
+context& context::set(string_view name, v8pp::jsmodule& m)
 {
 	return set(name, m.new_instance());
 }

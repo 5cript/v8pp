@@ -165,8 +165,8 @@ public:
 	{
 		static object_pointer_type call(v8::FunctionCallbackInfo<v8::Value> const& args)
 		{
-			using ctor_function = object_pointer_type (*)(v8::Isolate* isolate, Args...);
-			return detail::call_from_v8<Traits, ctor_function>(&factory<T, Traits>::create, args);
+			using ctor_function_here = object_pointer_type (*)(v8::Isolate* isolate, Args...);
+			return detail::call_from_v8<Traits, ctor_function_here>(&factory<T, Traits>::create, args);
 		}
 	};
 

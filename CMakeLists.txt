@@ -7,10 +7,6 @@ project(v8pp
 	LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 option(BUILD_SHARED_LIBS "Build shared library" ON)
 option(BUILD_TESTING "Build and run tests" OFF)
 option(BUILD_DOCUMENTATION "Build documentation" OFF)
@@ -28,7 +24,7 @@ if(BUILD_SHARED_LIBS AND WIN32)
 endif()
 
 # put all binaries into the output dir
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
 add_subdirectory(v8pp)
 

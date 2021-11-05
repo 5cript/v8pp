@@ -10,7 +10,7 @@
 
 namespace v8pp {
 
-class module;
+class jsmodule;
 
 template<typename T, typename Traits>
 class class_;
@@ -75,8 +75,8 @@ public:
 	/// Set a V8 value in the context global object with specified name
 	context& set(string_view name, v8::Local<v8::Value> value);
 
-	/// Set module to the context global object
-	context& set(string_view name, v8pp::module& m);
+	/// Set jsmodule to the context global object
+	context& set(string_view name, v8pp::jsmodule& m);
 
 	/// Set class to the context global object
 	template<typename T, typename Traits>

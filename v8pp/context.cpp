@@ -76,8 +76,8 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 					+ "): could not load shared library " + filename);
 			}
 #if defined(WIN32)
-			void* sym = ::GetProcAddress((HMODULE)module.handle,
-				V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME));
+			void* sym = reinterpret_cast<void*>(::GetProcAddress((HMODULE)module.handle,
+				V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME)));
 #else
 			void* sym = dlsym(module.handle, V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME));
 #endif

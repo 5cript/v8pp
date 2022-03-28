@@ -1,17 +1,11 @@
 name: CMake
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: [ push, pull_request ]
 jobs:
   build:
     strategy:
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        build_type: [ Release ] #, Debug ]
+        build_type: [ Release ]
         shared_lib: [ false, true ]
         header_only: [ false, true ]
         v8_compress_pointers: [ false, true ]
@@ -45,6 +39,9 @@ jobs:
     - name: Install Visual C++ 
       if: startsWith(matrix.os, 'windows')
       uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        toolset: 14.29 # Visual C++ 2019
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@v3

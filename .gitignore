@@ -13,7 +13,3 @@
 *.so
 *.o
 *.a
-
-# Clion related ignores
-/cmake-build-*/
-/.idea/

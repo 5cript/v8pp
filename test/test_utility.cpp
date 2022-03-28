@@ -178,13 +178,13 @@ void test_type_traits()
 	static_assert(!v8pp::detail::is_mapping<std::string>::value, "std::string");
 	static_assert(!v8pp::detail::is_array<std::string>::value, "std::string");
 
-	static_assert(v8pp::detail::is_string<v8pp::string_view>::value, "std::string_view");
+	static_assert(v8pp::detail::is_string<std::string_view>::value, "std::string_view");
 	static_assert(v8pp::detail::is_string<std::u16string>::value, "std::u16string");
-	static_assert(v8pp::detail::is_string<v8pp::u16string_view>::value, "std::u16string_view");
-	//static_assert(v8pp::detail::is_string<std::u32string>::value, "std::u32string");
-	//static_assert(v8pp::detail::is_string<v8pp::u32string_view>::value, "std::u32string_view");
+	static_assert(v8pp::detail::is_string<std::u16string_view>::value, "std::u16string_view");
+	static_assert(v8pp::detail::is_string<std::u32string>::value, "std::u32string");
+	static_assert(v8pp::detail::is_string<std::u32string_view>::value, "std::u32string_view");
 	static_assert(v8pp::detail::is_string<std::wstring>::value, "std::wstring");
-	static_assert(v8pp::detail::is_string<v8pp::wstring_view>::value, "std::wstring_view");
+	static_assert(v8pp::detail::is_string<std::wstring_view>::value, "std::wstring_view");
 	static_assert(v8pp::detail::is_string<char const*>::value, "char const*");
 	static_assert(v8pp::detail::is_string<char16_t const*>::value, "char16_t const*");
 	static_assert(v8pp::detail::is_string<char32_t const*>::value, "char32_t const*");
@@ -259,11 +259,6 @@ void test_utility()
 
 	check_eq("type_id", type_id<int>().name(), "int");
 	check_eq("type_id", type_id<bool>().name(), "bool");
-#if defined(_MSC_VER) && !defined(__clang__)
-	check_eq("type_id", type_id<some_struct>().name(), "struct some_struct");
-	check_eq("type_id", type_id<test::some_class>().name(), "class test::some_class");
-#else
 	check_eq("type_id", type_id<some_struct>().name(), "some_struct");
 	check_eq("type_id", type_id<test::some_class>().name(), "test::some_class");
-#endif
 }

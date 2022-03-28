@@ -12,36 +12,36 @@ template<typename T, typename Traits>
 class class_;
 
 /// Module (similar to v8::ObjectTemplate)
-class jsmodule
+class module
 {
 public:
-	/// Create new jsmodule in the specified V8 isolate
-	explicit jsmodule(v8::Isolate* isolate)
+	/// Create new module in the specified V8 isolate
+	explicit module(v8::Isolate* isolate)
 		: isolate_(isolate)
 		, obj_(v8::ObjectTemplate::New(isolate))
 	{
 	}
 
-	/// Create new jsmodule in the specified V8 isolate for existing ObjectTemplate
-	explicit jsmodule(v8::Isolate* isolate, v8::Local<v8::ObjectTemplate> obj)
+	/// Create new module in the specified V8 isolate for existing ObjectTemplate
+	explicit module(v8::Isolate* isolate, v8::Local<v8::ObjectTemplate> obj)
 		: isolate_(isolate)
 		, obj_(obj)
 	{
 	}
 
-	jsmodule(jsmodule const&) = delete;
-	jsmodule& operator=(jsmodule const&) = delete;
+	module(module const&) = delete;
+	module& operator=(module const&) = delete;
 
-	jsmodule(jsmodule&&) = default;
-	jsmodule& operator=(jsmodule&&) = default;
+	module(module&&) = default;
+	module& operator=(module&&) = default;
 
-	/// v8::Isolate where the jsmodule belongs
+	/// v8::Isolate where the module belongs
 	v8::Isolate* isolate() { return isolate_; }
 
 	/// V8 ObjectTemplate implementation
 	v8::Local<v8::ObjectTemplate> impl() const { return obj_; }
 
-	/// Set a V8 value in the jsmodule with specified name
+	/// Set a V8 value in the module with specified name
 	template<typename Data>
 	module& value(std::string_view name, v8::Local<Data> value)
 	{
@@ -55,7 +55,7 @@ public:
 		return value(name, m.obj_);
 	}
 
-	/// Set wrapped C++ class in the jsmodule with specified name
+	/// Set wrapped C++ class in the module with specified name
 	template<typename T, typename Traits>
 	module& class_(std::string_view name, v8pp::class_<T, Traits>& cl)
 	{
@@ -74,7 +74,7 @@ public:
 		return value(name, wrap_function_template<Function, Traits>(isolate_, std::forward<Function>(func)));
 	}
 
-	/// Set a C++ variable in the jsmodule with specified name
+	/// Set a C++ variable in the module with specified name
 	template<typename Variable>
 	module& var(char const* name, Variable& var)
 	{
@@ -95,8 +95,7 @@ public:
 		using Getter = typename std::decay<GetFunction>::type;
 		using Setter = typename std::decay<SetFunction>::type;
 		static_assert(detail::is_callable<Getter>::value, "GetFunction must be callable");
-		static_assert(detail::is_callable<Setter>::value
-			|| std::is_same<Setter, detail::none>::value, "SetFunction must be callable");
+		static_assert(detail::is_callable<Setter>::value || std::is_same<Setter, detail::none>::value, "SetFunction must be callable");
 
 		using property_type = v8pp::property<Getter, Setter, detail::none, detail::none>;
 
@@ -132,7 +131,7 @@ public:
 		return *this;
 	}
 
-	/// Create a new jsmodule instance in V8
+	/// Create a new module instance in V8
 	v8::Local<v8::Object> new_instance()
 	{
 		return obj_->NewInstance(isolate_->GetCurrentContext()).ToLocalChecked();

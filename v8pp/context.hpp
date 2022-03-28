@@ -11,7 +11,7 @@
 
 namespace v8pp {
 
-class jsmodule;
+class module;
 
 template<typename T, typename Traits>
 class class_;

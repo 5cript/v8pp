@@ -9,7 +9,7 @@
 #include <fstream>
 #include <utility>
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -57,8 +57,7 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 				filename = ctx->lib_path_ + path_sep + name;
 			}
 			std::string const suffix = V8PP_PLUGIN_SUFFIX;
-			if (filename.size() >= suffix.size()
-				&& filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) != 0)
+			if (filename.size() >= suffix.size() && filename.compare(filename.size() - suffix.size(), suffix.size(), suffix) != 0)
 			{
 				filename += suffix;
 			}
@@ -74,8 +73,7 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 
 			if (!jsmodule.handle)
 			{
-				throw std::runtime_error("load_module(" + name
-					+ "): could not load shared library " + filename);
+				throw std::runtime_error("load_module(" + name + "): could not load shared library " + filename);
 			}
 #if defined(WIN32)
 			void* sym = reinterpret_cast<void*>(::GetProcAddress((HMODULE)jsmodule.handle,
@@ -85,10 +83,7 @@ void context::load_module(v8::FunctionCallbackInfo<v8::Value> const& args)
 #endif
 			if (!sym)
 			{
-				throw std::runtime_error("load_module(" + name
-					+ "): initialization function "
-					V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME)
-					" not found in " + filename);
+				throw std::runtime_error("load_module(" + name + "): initialization function " V8PP_STRINGIZE(V8PP_PLUGIN_INIT_PROC_NAME) " not found in " + filename);
 			}
 
 			using module_init_proc = v8::Local<v8::Value> (*)(v8::Isolate*);
@@ -156,8 +151,8 @@ v8::Isolate* context::create_isolate(v8::ArrayBuffer::Allocator* allocator)
 }
 
 context::context(v8::Isolate* isolate, v8::ArrayBuffer::Allocator* allocator,
-		bool add_default_global_methods, bool enter_context,
-		v8::Local<v8::ObjectTemplate> global)
+	bool add_default_global_methods, bool enter_context,
+	v8::Local<v8::ObjectTemplate> global)
 	: own_isolate_(isolate == nullptr)
 	, enter_context_(enter_context)
 	, isolate_(isolate ? isolate : create_isolate(allocator))
@@ -294,7 +289,8 @@ v8::Local<v8::Value> context::run_script(std::string_view source, std::string_vi
 	v8::ScriptOrigin origin(to_v8(isolate_, filename));
 	v8::Local<v8::Script> script;
 	bool const is_valid = v8::Script::Compile(context,
-		to_v8(isolate_, source), &origin).ToLocal(&script);
+		to_v8(isolate_, source), &origin)
+							  .ToLocal(&script);
 	(void)is_valid;
 
 	v8::Local<v8::Value> result;

@@ -11,7 +11,6 @@ template struct convert<std::string_view>;
 template struct convert<std::u16string>;
 template struct convert<std::u16string_view>;
 
-template struct convert<bool>;
 #ifdef _WIN32
 template struct convert<std::wstring>;
 template struct convert<std::wstring_view>;
